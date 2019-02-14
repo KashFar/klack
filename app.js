@@ -14,6 +14,7 @@ let users = {};
 
 app.use(express.static("./public"));
 app.use(express.json());
+mongoose.connect(URL)
 
 // generic comparison function for case-insensitive alphabetic sorting on the name field
 function userSortFn(a, b) {
