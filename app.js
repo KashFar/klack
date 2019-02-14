@@ -7,14 +7,46 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 // List of all messages
+// need to add message schema, similar to rsvp assessment. and create instance of message schema
 let messages = [];
 
 // Track last active times for each sender
 let users = {};
 
+mongoose.connect(url, {useNewUrlParser: true})     // matches variable on line 4
+
+const db = mongoose.connection
+db.on('error',console.error.bind(console.error, 'connection error:'))
+
+//db.onc is from mongodb learning stuff  
+//this is for initial load of the page. peters doesn't do this, and waits until the message loads.
+db.once('open',() => {
+  Message.find(function(err, messages){
+    if(err) return console.error(error)
+    messages.forEach(message=>{
+      if(users(message.sender)=== underfined){
+        //user does not exist
+        users[message.sender]=message.timestamp
+      } else{
+        //user exists
+        if(message.timestamp > users[message.sender])
+        users[message.sender]=message.timestamp
+      }
+    })
+  })
+  app.listen(port);
+})
+
+messageSchema = mongoose.Schema({
+  name: {type: String, required: true},
+  email: {type: String, required: true},
+  timestamp: {type: Number, required: true}
+})
+
+const Message = mongoose.model('Message', messageSchema)
+
 app.use(express.static("./public"));
 app.use(express.json());
-mongoose.connect(url)     // matches variable on line 4
 
 // generic comparison function for case-insensitive alphabetic sorting on the name field
 function userSortFn(a, b) {
@@ -47,30 +79,52 @@ app.get("/messages", (request, response) => {
   // sort the list of users alphabetically by name
   usersSimple.sort(userSortFn);
   usersSimple.filter(a => a.name !== request.query.for);
-  // advanced user transformations. Similar to codewars problems.
+  // advanced user transformations. Similar to code wars problems.
   // matches things in the filters array to make sure it matches get request
 
   // update the requesting user's last access time
   users[request.query.for] = now;
 
   // send the latest 40 messages and the full user list, annotated with active flags
-  response.send({ messages: messages.slice(-40), users: usersSimple });
 });
+
+// one for local one for global whe nits hosted the nit has both message.finds
+Message.find(function(err, messages) {
+  if (err) return console.error(err)
+  response.send({ messages: messages.slice(-40), users: usersSimple });
+})
 
 app.post("/messages", (request, response) => {
+
+  const message = new Message ({
+        sender:  req.body.sender,
+        message: req.body.message,
+        timestamp = Date.now()
+  })
   // add a timestamp to each incoming message.
-  const timestamp = Date.now();
-  request.body.timestamp = timestamp;
+  // const timestamp = Date.now();
+  // request.body.timestamp = timestamp;
 
   // append the new message to the message list
-  messages.push(request.body);
+  // messages.push(request.body);
 
   // update the posting user's last access timestamp (so we know they are active)
-  users[request.body.sender] = timestamp;
+  // users[request.body.sender] = timestamp;
 
   // Send back the successful response.
-  response.status(201);
-  response.send(request.body);
+  // response.status(201);
+  response.send(request.body)
 });
 
-app.listen(port);
+message.save(function (err, message){
+  if (err) {
+    response.status(500).send()
+    return console.error(err)
+  } else {
+    users[message.sender]=message.timestamp
+
+    response.status(201)
+    response.send(message)
+  }
+})
+
