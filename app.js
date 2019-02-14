@@ -24,7 +24,7 @@ db.once('open',() => {
   Message.find(function(err, messages){
     if(err) return console.error(error)
     messages.forEach(message=>{
-      if(users(message.sender)=== underfined){
+      if(users(message.sender)=== undefined){
         //user does not exist
         users[message.sender]=message.timestamp
       } else{
