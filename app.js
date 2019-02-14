@@ -1,8 +1,12 @@
 const express = require("express");
 const querystring = require("querystring");
-const port = 3000;
-const app = express();
+const mongoose = require("mongoose")
+const url = process.env.MONGODBURL || "mongodb://heroku_7sbkpxlv:afrkvd577ri1bt2uktbka7jq07@ds119085.mlab.com:19085/heroku_7sbkpxlv"
 
+const port = process.env.PORT || 3000;
+const app = express()
+
+const app= express();
 // List of all messages
 let messages = [];
 
@@ -43,6 +47,8 @@ app.get("/messages", (request, response) => {
   // sort the list of users alphabetically by name
   usersSimple.sort(userSortFn);
   usersSimple.filter(a => a.name !== request.query.for);
+  // advanced user transformations. Similar to codewars problems.
+  // matches things in the filters array to make sure it matches get request
 
   // update the requesting user's last access time
   users[request.query.for] = now;

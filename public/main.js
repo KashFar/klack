@@ -43,7 +43,8 @@ function scrollMessages() {
 
 function fetchMessages() {
   fetch("/messages?for=" + encodeURIComponent(name))
-    .then(response => response.json())
+    // encoe uri makes everything into a valid URL  
+  .then(response => response.json())
     .then(data => {
       // if already scrolled to bottom, do so again after adding messages
       const shouldScroll = scrolledToBottom();
@@ -56,6 +57,11 @@ function fetchMessages() {
       for (let i = 0; i < data.messages.length; i++) {
         let msg = data.messages[i];
         if (msg.timestamp > messages[messages.length - 1].timestamp) {
+          // server always sending the last 40 messages. everytime client fetches
+          //only gets last 40 messages. chances are wont be 40 every 5 seconds. so it has to loop
+          // through the last 40 messages and see if any on list are newer than client as seen.
+          // different from kenziegram, where the server was sending the timestamp to client.
+          // now the client is doing that work.  
           appendMessage(msg);
           shouldDing = true;
         }
@@ -69,7 +75,7 @@ function fetchMessages() {
 }
 
 document.getElementById("newmessage").addEventListener("keypress", event => {
-  // if the key pressed was enter (and not shift enter), post the message.
+  // if the key pressed was enter (keycode 13) (and not shift enter), post the message.
   if (event.keyCode === 13 && !event.shiftKey) {
     textarea.disabled = true;
     const postRequestOptions = {
@@ -89,6 +95,7 @@ document.getElementById("newmessage").addEventListener("keypress", event => {
         textarea.value = "";
         textarea.disabled = false;
         textarea.focus();
+        // focuses the cursor on that area.
       });
   }
 });
