@@ -6,7 +6,6 @@ const url = process.env.MONGODBURL || "mongodb://heroku_7sbkpxlv:afrkvd577ri1bt2
 const port = process.env.PORT || 3000;
 const app = express()
 
-const app= express();
 // List of all messages
 let messages = [];
 
