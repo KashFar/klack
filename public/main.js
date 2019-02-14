@@ -89,6 +89,7 @@ document.getElementById("newmessage").addEventListener("keypress", event => {
       .then(response => response.json())
       .then(msg => {
         appendMessage(msg);
+        console.log(msg)
         scrollMessages();
 
         // reset the textarea
