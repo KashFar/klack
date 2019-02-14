@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 const url = process.env.MONGODBURL || "mongodb://heroku_7sbkpxlv:afrkvd577ri1bt2uktbka7jq07@ds119085.mlab.com:19085/heroku_7sbkpxlv"
 
 const port = process.env.PORT || 3000;
-const app = express()
+const app = express();
 
 // List of all messages
 let messages = [];
@@ -72,4 +72,4 @@ app.post("/messages", (request, response) => {
   response.send(request.body);
 });
 
-app.listen(3000);
+app.listen(port);
